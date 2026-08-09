@@ -24,15 +24,17 @@ dotenv.config();
 
 const app = express();
 
-/*
-|--------------------------------------------------------------------------
-| Core Middleware
-|--------------------------------------------------------------------------
-*/
+/* -------------------------------------------------------
+   Core Middleware
+------------------------------------------------------- */
 
 app.use(express.json());
 
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 app.use(cookieParser());
 
@@ -47,44 +49,74 @@ app.use(
 
 app.use(morgan("dev"));
 
-/*
-|--------------------------------------------------------------------------
-| Routes
-|--------------------------------------------------------------------------
-*/
+/* -------------------------------------------------------
+   API Root
+------------------------------------------------------- */
 
-app.use("/api/v1/health", healthRoutes);
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Budget Tracker API is running",
+  });
+});
 
-app.use("/api/v1/auth", authRoutes);
+/* -------------------------------------------------------
+   Routes
+------------------------------------------------------- */
 
-app.use("/api/v1/income", incomeRoutes);
+app.use(
+  "/api/v1/health",
+  healthRoutes
+);
 
-app.use("/api/v1/expense", expenseRoutes);
+app.use(
+  "/api/v1/auth",
+  authRoutes
+);
 
-app.use("/api/v1/dashboard", dashboardRoutes);
+app.use(
+  "/api/v1/income",
+  incomeRoutes
+);
 
-app.use("/api/v1/budget", budgetRoutes);
+app.use(
+  "/api/v1/expense",
+  expenseRoutes
+);
+
+app.use(
+  "/api/v1/dashboard",
+  dashboardRoutes
+);
+
+app.use(
+  "/api/v1/budget",
+  budgetRoutes
+);
 
 app.use(
   "/api/v1/budget-analytics",
   budgetAnalyticsRoutes
 );
 
-app.use("/api/v1/goals", goalRoutes);
+app.use(
+  "/api/v1/goals",
+  goalRoutes
+);
 
 app.use(
   "/api/v1/auth",
   profileRoutes
 );
+
 app.use(
   "/api/v1/recurring-transactions",
   recurringTransactionRoutes
 );
-/*
-|--------------------------------------------------------------------------
-| Error Handling
-|--------------------------------------------------------------------------
-*/
+
+/* -------------------------------------------------------
+   Error Handling
+------------------------------------------------------- */
 
 app.use(notFoundMiddleware);
 
