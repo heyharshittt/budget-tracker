@@ -11,8 +11,11 @@ import sendToken from "../utils/sendToken.js";
 
 export const register = asyncHandler(
   async (req, res) => {
-    const { name, email, password } =
-      req.body;
+    const {
+      name,
+      email,
+      password,
+    } = req.body;
 
     const user = await registerUser(
       name,
@@ -36,23 +39,37 @@ export const register = asyncHandler(
 
 export const login = asyncHandler(
   async (req, res) => {
-    const { email, password } =
-      req.body;
+    const {
+      email,
+      password,
+    } = req.body;
 
     const user = await loginUser(
       email,
       password
     );
 
-    sendToken(user, 200, res);
+    sendToken(
+      user,
+      200,
+      res
+    );
   }
 );
 
 export const logout = asyncHandler(
   async (req, res) => {
+    const isProduction =
+      process.env.NODE_ENV ===
+      "production";
+
     res.cookie("token", "", {
-      expires: new Date(0),
       httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction
+        ? "none"
+        : "lax",
+      expires: new Date(0),
     });
 
     return res.status(200).json(
@@ -66,9 +83,10 @@ export const logout = asyncHandler(
 
 export const getMe = asyncHandler(
   async (req, res) => {
-    const user = await getCurrentUser(
-      req.user.id
-    );
+    const user =
+      await getCurrentUser(
+        req.user.id
+      );
 
     return res.status(200).json(
       new ApiResponse(
