@@ -38,45 +38,35 @@ const IncomePage = () => {
     fetchIncomes();
   }, []);
 
-  const handleAddIncome = async (
-    formData
-  ) => {
+  const handleAddIncome = async (formData) => {
     try {
       await createIncome(formData);
 
-      toast.success(
-        "Income added successfully"
-      );
+      toast.success("Income added successfully");
 
       await fetchIncomes();
     } catch (error) {
       console.error(error);
 
       toast.error(
-        error?.response?.data
-          ?.message ||
+        error?.response?.data?.message ||
           "Failed to add income"
       );
     }
   };
 
-  const handleDeleteIncome = async (
-    id
-  ) => {
+  const handleDeleteIncome = async (id) => {
     try {
       await deleteIncome(id);
 
-      toast.success(
-        "Income deleted successfully"
-      );
+      toast.success("Income deleted successfully");
 
       await fetchIncomes();
     } catch (error) {
       console.error(error);
 
       toast.error(
-        error?.response?.data
-          ?.message ||
+        error?.response?.data?.message ||
           "Failed to delete income"
       );
     }
@@ -90,9 +80,7 @@ const IncomePage = () => {
       />
 
       <Card className="mb-8">
-        <IncomeForm
-          onSubmit={handleAddIncome}
-        />
+        <IncomeForm onSubmit={handleAddIncome} />
       </Card>
 
       <Card className="overflow-hidden p-0">
@@ -104,55 +92,34 @@ const IncomePage = () => {
             description="Add your first income record"
           />
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-slate-50">
-                <th className="p-4 text-left">
-                  Source
-                </th>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px]">
+              <thead>
+                <tr className="border-b bg-slate-50">
+                  <th className="p-4 text-left">Source</th>
+                  <th className="p-4 text-left">Amount</th>
+                  <th className="p-4 text-left">Date</th>
+                  <th className="p-4 text-left">Actions</th>
+                </tr>
+              </thead>
 
-                <th className="p-4 text-left">
-                  Amount
-                </th>
-
-                <th className="p-4 text-left">
-                  Date
-                </th>
-
-                <th className="p-4 text-left">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {incomes.map(
-                (income) => (
-                  <tr
-                    key={income._id}
-                    className="border-b"
-                  >
-                    <td className="p-4">
-                      {income.source}
-                    </td>
+              <tbody>
+                {incomes.map((income) => (
+                  <tr key={income._id} className="border-b">
+                    <td className="p-4">{income.source}</td>
 
                     <td className="p-4 font-medium text-emerald-600">
-                      ₹
-                      {income.amount.toLocaleString()}
+                      ₹{income.amount.toLocaleString()}
                     </td>
 
                     <td className="p-4">
-                      {new Date(
-                        income.date
-                      ).toLocaleDateString()}
+                      {new Date(income.date).toLocaleDateString()}
                     </td>
 
                     <td className="p-4">
                       <button
                         onClick={() =>
-                          handleDeleteIncome(
-                            income._id
-                          )
+                          handleDeleteIncome(income._id)
                         }
                         className="font-medium text-red-600 hover:text-red-700"
                       >
@@ -160,10 +127,10 @@ const IncomePage = () => {
                       </button>
                     </td>
                   </tr>
-                )
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </Card>
     </DashboardLayout>
