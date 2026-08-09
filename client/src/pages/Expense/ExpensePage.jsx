@@ -18,73 +18,54 @@ import {
 } from "../../services/expense.service";
 
 const ExpensePage = () => {
-  const [expenses, setExpenses] =
-    useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] =
-    useState(true);
+  const fetchExpenses = async () => {
+    try {
+      const response = await getAllExpenses();
 
-  const fetchExpenses =
-    async () => {
-      try {
-        const response =
-          await getAllExpenses();
-
-        setExpenses(
-          response.data
-        );
-      } catch (error) {
-        toast.error(
-          "Failed to fetch expenses"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+      setExpenses(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch expenses");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchExpenses();
   }, []);
 
-  const handleAddExpense =
-    async (formData) => {
-      try {
-        await createExpense(
-          formData
-        );
+  const handleAddExpense = async (formData) => {
+    try {
+      await createExpense(formData);
 
-        toast.success(
-          "Expense added successfully"
-        );
+      toast.success("Expense added successfully");
 
-        await fetchExpenses();
-      } catch (error) {
-        toast.error(
-          error?.response?.data
-            ?.message ||
-            "Failed to add expense"
-        );
-      }
-    };
+      await fetchExpenses();
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to add expense"
+      );
+    }
+  };
 
-  const handleDeleteExpense =
-    async (id) => {
-      try {
-        await deleteExpense(id);
+  const handleDeleteExpense = async (id) => {
+    try {
+      await deleteExpense(id);
 
-        toast.success(
-          "Expense deleted successfully"
-        );
+      toast.success("Expense deleted successfully");
 
-        await fetchExpenses();
-      } catch (error) {
-        toast.error(
-          error?.response?.data
-            ?.message ||
-            "Failed to delete expense"
-        );
-      }
-    };
+      await fetchExpenses();
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to delete expense"
+      );
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -94,87 +75,57 @@ const ExpensePage = () => {
       />
 
       <Card className="mb-8">
-        <ExpenseForm
-          onSubmit={
-            handleAddExpense
-          }
-        />
+        <ExpenseForm onSubmit={handleAddExpense} />
       </Card>
 
       <Card className="overflow-hidden p-0">
         {loading ? (
           <Loader />
-        ) : expenses.length ===
-          0 ? (
+        ) : expenses.length === 0 ? (
           <EmptyState
             title="No Expenses Found"
             description="Add your first expense"
           />
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-slate-50">
-                <th className="p-4 text-left">
-                  Category
-                </th>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px]">
+              <thead>
+                <tr className="border-b bg-slate-50">
+                  <th className="p-4 text-left">Category</th>
+                  <th className="p-4 text-left">Amount</th>
+                  <th className="p-4 text-left">Date</th>
+                  <th className="p-4 text-left">Actions</th>
+                </tr>
+              </thead>
 
-                <th className="p-4 text-left">
-                  Amount
-                </th>
-
-                <th className="p-4 text-left">
-                  Date
-                </th>
-
-                <th className="p-4 text-left">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {expenses.map(
-                (expense) => (
-                  <tr
-                    key={
-                      expense._id
-                    }
-                    className="border-b"
-                  >
-                    <td className="p-4">
-                      {
-                        expense.category
-                      }
-                    </td>
+              <tbody>
+                {expenses.map((expense) => (
+                  <tr key={expense._id} className="border-b">
+                    <td className="p-4">{expense.category}</td>
 
                     <td className="p-4 font-medium text-red-600">
-                      ₹
-                      {expense.amount.toLocaleString()}
+                      ₹{expense.amount.toLocaleString()}
                     </td>
 
                     <td className="p-4">
-                      {new Date(
-                        expense.date
-                      ).toLocaleDateString()}
+                      {new Date(expense.date).toLocaleDateString()}
                     </td>
 
                     <td className="p-4">
                       <button
                         onClick={() =>
-                          handleDeleteExpense(
-                            expense._id
-                          )
+                          handleDeleteExpense(expense._id)
                         }
-                        className="font-medium text-red-600"
+                        className="font-medium text-red-600 hover:text-red-700"
                       >
                         Delete
                       </button>
                     </td>
                   </tr>
-                )
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </Card>
     </DashboardLayout>
